@@ -1,0 +1,133 @@
+---
+title: "NES Gov Responsibility"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+```
+
+# ANES Government Responsibility
+
+# question text
+
+ANES VCF0805: (1956, 1960) Around election time people talk about different things that our government in Washington is doing or should be doing. Now I would like to talk to you about some of the things that our government might do. Of course, different things are important to different people, so we don't expect everyone to have an opinion about all of these. I would like you to look at this card as I read each question and tell me how you feel about the question. If you don't have an opinion, just tell me that; if you do have an opinion, choose one of the other answers. 'The government ought to help people get doctors and hospital care at low cost.' (1962)
+Now on a different problem. 'The government ought to help people get doctors and hospital care at low cost.' Do you have an opinion on this or not? [If yes:] Do you agree that the government should do this or do you think the government should not do it.
+(1964,1968)
+Some say the government in Washington ought to help people get doctors and hospital care at low cost; others say the government should not get into this. Have you been interested enough in this to favor one side over the other? [If yes:] What is your position? [1. Help people get doctors and hospital care at low cost, 2. Stay out of this]
+
+## Data Frame for Question Analysis
+
+* helpful links
+[ggplot2 cheatsheet](http://www.cs.utexas.edu/~cannata/dataVis/Class%20Notes/Beautiful%20plotting%20in%20R_%20A%20ggplot2%20cheatsheet%20_%20Technical%20Tidbits%20From%20Spatial%20Analysis%20&%20Data%20Science.pdf)
+[ggplot2 axis manipulation and themes](https://rstudio-pubs-static.s3.amazonaws.com/3364_d1a578f521174152b46b19d0c83cbe7e.html)
+[StackOverflow question on date variable](https://stackoverflow.com/questions/30255833/convert-four-digit-year-values-to-a-date-type)
+
+```{r}
+gov_resp.df <- var_anes %>%
+  select(year, gov_resp) %>%
+  filter(gov_resp != 0, gov_resp != 9)
+
+gov_resp.df$year <- factor(gov_resp.df$year)
+```
+
+## T-test
+```{r}
+# create data frame for question
+gov_resp.df <- var_anes %>%
+  select(year, gov_resp) %>%
+  filter(gov_resp != 0, gov_resp != 9) %>%
+  na.omit()
+
+# create df for analysis
+gov_resp_t <- gov_resp.df %>%
+  group_by(year) %>%
+  spread(year, gov_resp)
+
+# t-test function
+t.year <- function(x) {
+  y <- x + 4
+  
+}
+```
+
+
+## Crosstabulations of responses
+```{r}
+# new data frame for crosstabs
+gov_resp_cross <- gov_resp.df %>%
+  filter(gov_resp != 0, gov_resp != 9) %>%
+  na.omit() %>%
+  group_by(year) %>%
+  summarise(sum_all = sum(gov_resp == 1, gov_resp == 2),
+            sum_help = sum(gov_resp == 1),
+            sum_stayout = sum(gov_resp == 2)) %>%
+  mutate(perc_help = (sum_help / sum_all * 100),
+         perc_stayout = (sum_stayout / sum_all * 100))
+
+# round percentages to integers
+gov_resp_cross$perc_help <- round(gov_resp_cross$perc_help, 0)
+gov_resp_cross$perc_stayout <- round(gov_resp_cross$perc_stayout, 0)
+
+# reorder columns
+gov_resp_cross <- gov_resp_cross[, c(1, 3, 5, 4, 6)]
+
+kable(gov_resp_cross,
+      col.names = c("Year",
+                "# Responses", 
+                "% of total",
+                "# of Responses",
+                "% of total")) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  add_header_above(c(" " = 1, "1. Help people get doctors and\nhospital care at low cost." = 2, "2. Stay out of this." = 2)) %>%
+  column_spec(1, bold = T) %>%
+  add_footnote(c("Footnote 1"), notation = "symbol")
+
+```
+
+```{r}
+# create data frame for question
+gov_resp_plot <- gov_resp.df %>%
+  select(year, gov_resp) %>%
+  filter(gov_resp != 0, gov_resp != 9) %>%
+  group_by(year) %>%
+  summarise(sum_all = sum(gov_resp),
+            sum_help = sum(gov_resp == 1),
+            sum_stayout = sum(gov_resp == 2)) %>%
+  mutate(perc_help = (sum_help / sum_all),
+         perc_stayout = (sum_stayout / sum_all))
+
+ggplot(gov_resp_plot, aes(x = factor(year), group = 1)) + 
+  geom_line(aes(y = perc_help, color = "Help people")) +
+  geom_line(aes(y = perc_stayout, color = "Stay out of this")) +
+  scale_y_continuous(label = scales::percent,
+                     limits = c(0, 1)) +
+  scale_x_discrete(expand = c(0.05,0.05)) +
+  scale_colour_manual(name='',values=c('Help people'='green3','Stay out of this'='deeppink3')) +
+  # label our graph
+  labs(title = "Figure 1 \nOpinion on Govt Responsibility to Help People Get Health Care",
+       x = "Year",
+       y = "Percent of responses",
+       caption = "Source: NES Cumulative Data File",
+       color = NULL,
+       group = NULL) +
+  # move the legend to the bottom
+  theme(plot.title = element_text(size = 15, face = "bold", vjust = 1, lineheight = 0.8, hjust = 0),
+        axis.text.x = element_text(size = 10, hjust = 1, angle = 90),
+        legend.position = "right",
+        panel.background=element_rect(fill='grey96'),
+        plot.margin = unit(c(3, 4, 3, 2), "mm"))
+```
+
+
+
+
+```{r}
+
+```
+
+

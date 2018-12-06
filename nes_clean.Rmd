@@ -1,0 +1,44 @@
+---
+title: "nes_clean"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Important variables
+
+* weight variables
+** VCF0009x/VCF0009y/VCF0009z
+
+* demographics
+** VCF0101 - age
+** VCF0102 - age group
+** VCF0104 - gender
+** VCF0110 - education 4-cat
+** VCF0114 - R family income group
+** VCF0140 - education 6-cat
+
+
+* analysis
+** VCF0805
+** VCF0806
+** VCF0839
+
+```{r}
+var_anes <- read_anes_cdf %>%
+  select(
+    year = VCF0004, id = VCF0006a,
+    # weight variables
+    weight1 = VCF0009x, weight2 = VCF0009y, weight3 = VCF0009z,
+    # demographic variables
+    age = VCF0101, age_group = VCF0102, gender = VCF0104, educ4 = VCF0110, fam_income = VCF0114, educ6 = VCF0140,
+    # analysis variables
+    gov_resp = VCF0805, insure = VCF0806, serve_spend = VCF0839)
+
+
+# how do I remove the day and month?
+# var_anes$year <- make_datetime(year = var_anes$year, month = FALSE, day = FALSE)
+```
