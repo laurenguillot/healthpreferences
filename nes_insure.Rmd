@@ -5,6 +5,12 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+options(knitr.table.format = "html")
 ```
 
 # ANES Government Insurance
@@ -12,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ANES VCF0806: There is much concern about the rapid rise in medical and hospital costs. Some (1988,1994-LATER: people) feel there should be a government insurance plan which would cover all medical and hospital expenses (1984 AND LATER: for everyone). (1996,2004: Suppose these people are at one end of a scale, at point 1). Others feel that (1988,1994-1996: all) medical expenses should be paid by individuals, and through private insurance (1984 AND LATER: plans) like Blue Cross (1984-1994: or [1996:some] other company paid plans). (1996,2004: Suppose these people are at the other end, at point 7. And of course, some people have opinions somewhere in between at points 2,3,4,5 or 6.) Where would you place yourself on this scale, or haven't you thought much about this?
 
 
-```{r}
+```{r, echo=FALSE}
 insure.df <- var_anes %>%
   select(year, insure) %>%
   filter(insure != 0, insure != 9)
@@ -21,16 +27,25 @@ insure.df$year <- factor(insure.df$year)
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 # new data frame for crosstabs
 insure_cross <- insure.df %>%
   filter(insure != 0, insure != 9) %>%
-  na.omit() %>%
+  na.omit()
+
+insure_cross <- insure_cross %>%
   group_by(year) %>%
-  summarise(sum_all = sum(insure),
-            sum_gov = sum(insure == 1, insure == 2, insure == 3),
+  # need to specify all values, gives incorrect sums otherwise
+  summarise(sum_all = sum(insure == 1, 
+                          insure == 2, 
+                          insure == 3, 
+                          insure == 4, 
+                          insure == 5, 
+                          insure == 6, 
+                          insure == 7),
+            sum_gov = sum(insure <= 3),
             sum_between = sum(insure == 4),
-            sum_private = sum(insure == 5, insure == 6, insure == 7)) %>%
+            sum_private = sum(insure >= 5)) %>%
   mutate(perc_gov = (sum_gov / sum_all * 100),
          perc_between = (sum_between / sum_all * 100),
          perc_private = (sum_private / sum_all * 100))
@@ -58,12 +73,18 @@ kable(insure_cross,
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 insure_plot <- insure.df %>%
   select(year, insure) %>%
   filter(insure != 0, insure != 9) %>%
   group_by(year) %>%
-  summarise(sum_all = sum(insure),
+  summarise(sum_all = sum(insure == 1, 
+                          insure == 2, 
+                          insure == 3, 
+                          insure == 4, 
+                          insure == 5, 
+                          insure == 6, 
+                          insure == 7),
             sum_gov = sum(insure == 1, insure == 2, insure == 3), 
             sum_between = sum(insure == 4), 
             sum_private = sum(insure == 5, insure == 6, insure == 7)) %>%
@@ -95,6 +116,6 @@ ggplot(insure_plot, aes(x = factor(year), group = 1)) +
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 # copy for code block
 ```

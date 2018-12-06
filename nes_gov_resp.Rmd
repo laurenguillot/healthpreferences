@@ -9,6 +9,8 @@ library(tidyverse)
 library(dplyr)
 library(knitr)
 library(kableExtra)
+
+options(knitr.table.format = "html")
 ```
 
 # ANES Government Responsibility
@@ -27,7 +29,7 @@ Some say the government in Washington ought to help people get doctors and hospi
 [ggplot2 axis manipulation and themes](https://rstudio-pubs-static.s3.amazonaws.com/3364_d1a578f521174152b46b19d0c83cbe7e.html)
 [StackOverflow question on date variable](https://stackoverflow.com/questions/30255833/convert-four-digit-year-values-to-a-date-type)
 
-```{r}
+```{r, echo=FALSE}
 gov_resp.df <- var_anes %>%
   select(year, gov_resp) %>%
   filter(gov_resp != 0, gov_resp != 9)
@@ -36,7 +38,7 @@ gov_resp.df$year <- factor(gov_resp.df$year)
 ```
 
 ## T-test
-```{r}
+```{r, echo=FALSE}
 # create data frame for question
 gov_resp.df <- var_anes %>%
   select(year, gov_resp) %>%
@@ -57,7 +59,7 @@ t.year <- function(x) {
 
 
 ## Crosstabulations of responses
-```{r}
+```{r, echo=FALSE, results = 'asis'}
 # new data frame for crosstabs
 gov_resp_cross <- gov_resp.df %>%
   filter(gov_resp != 0, gov_resp != 9) %>%
@@ -86,10 +88,9 @@ kable(gov_resp_cross,
   add_header_above(c(" " = 1, "1. Help people get doctors and\nhospital care at low cost." = 2, "2. Stay out of this." = 2)) %>%
   column_spec(1, bold = T) %>%
   add_footnote(c("Footnote 1"), notation = "symbol")
-
 ```
 
-```{r}
+```{r, echo=FALSE}
 # create data frame for question
 gov_resp_plot <- gov_resp.df %>%
   select(year, gov_resp) %>%

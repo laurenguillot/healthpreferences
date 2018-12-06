@@ -27,7 +27,7 @@ library(tidyverse)
 ** VCF0806
 ** VCF0839
 
-```{r}
+```{r, echo=FALSE}
 var_anes <- read_anes_cdf %>%
   select(
     year = VCF0004, id = VCF0006a,
