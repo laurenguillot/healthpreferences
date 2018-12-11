@@ -20,12 +20,32 @@ library(tidyverse)
 ** VCF0110 - education 4-cat
 ** VCF0114 - R family income group
 ** VCF0140 - education 6-cat
+** VCF0105a - Race/ethnicity summary
+** VCF0301 - Party Identification of Respondent
+** VCF0302 - Initial Party ID response
+** VCF0305 - strength of partisanship
 
 
 * analysis
-** VCF0805
-** VCF0806
-** VCF0839
+** VCF0201 - FT Democrats
+** VCF0202 - FT Republicans
+** VCF0203 - FT Protestants
+** VCF0204 - FT Catholics
+** VCF0205 - FT Jewish people
+** VCF0206 - FT Black people
+** VCF0207 - FT White people
+** VCF0208 - FT Southerners
+** VCF0211 - FT Liberals
+** VCF0212 - FT Conservatives
+** VCF0217 - FT Chicanos/Hispanics
+** VCF0219 - FT Middle class people
+** VCF0220 - FT People on welfare
+** VCF0223 - FT Poor people
+** VCF9006 - FT Women
+** VCF0227 - Asian Americans
+** VCF0233 - Illegal Aliens
+
+
 
 ```{r, echo=FALSE}
 var_anes <- read_anes_cdf %>%

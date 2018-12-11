@@ -100,9 +100,9 @@ ggplot(insure_plot, aes(x = factor(year), group = 1)) +
                      limits = c(0, 1)) +
   scale_x_discrete(expand = c(0.05, 0.05)) +
   scale_color_manual(name = '', values = c('Preference for Govt Insurance' = 'green3',
-                                           'Between' = 'yellow',
+                                           'Between' = 'goldenrod2',
                                            'Preference for Private Insurance' = 'deeppink3')) +
-  labs(title = "Figure 3 \nGovt v Private Insurance Plans",
+  labs(title = "Figure 3: Govt v Private Insurance Plans",
        x = "Year",
        y = "Percent of responses",
        caption = "Source: NES Cumulative Data File",
